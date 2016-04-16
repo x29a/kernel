@@ -4,9 +4,9 @@ KERNEL_VER=$(uname -r)
 # path to full rpi kernel git repo
 KERNEL_SRC=/root/kernel/master
 # branch of kernel
-KERNEL_BRANCH="rpi-4.4.y"
+KERNEL_BRANCH="rpi-4.1.y"
 
-# if on unofficial kernel from rpi-update:
+# if on unofficial kernel from rpi-update (you are on your own, things are more complicated):
 # rm /boot/.firmware_revision
 # WANT_SYMVERS=1 rpi-update
 
@@ -39,7 +39,7 @@ git checkout -f ${KERNEL_BRANCH}
 
 echo ">>> update branch"
 read -n 1 -s
-git pull
+git pull origin ${KERNEL_BRANCH}
 
 echo ">>> reset to specific commit hash"
 read -n 1 -s
@@ -66,12 +66,13 @@ wget -q ${MODULE_URL} -O ${KERNEL_SRC}/Module.symvers
 # if installed linux-headers package
 # cp /usr/src/linux-headers-${KERNEL_VER}/Module.symvers ${KERNEL_SRC}/Module.symvers
 
-# check version in Makefile!
+# check version in ${KERNEL_SRC}/Makefile
 
 # prepare build
 echo ">>> preparing build"
 export KERNEL=kernel
 read -n 1 -s
+# if the next step asks for kernel parameters something is odd and highly likely things wont work. version mismatch
 make oldconfig
 make prepare
 make scripts
