@@ -86,6 +86,8 @@ make prepare
 make scripts
 make modules_prepare
 
+echo ">>> build module"
+read -n 1 -s
 # to only build one path
 # make path/to/file.c
 # make M=path/to/module
