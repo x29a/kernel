@@ -41,6 +41,7 @@ echo ">>> hash: ${GIT_HASH}"
 # checkout right version
 echo ">>> checkout specific branch"
 read -n 1 -s
+cd ${KERNEL_SRC}
 git checkout -f ${KERNEL_BRANCH}
 
 echo ">>> update branch"
