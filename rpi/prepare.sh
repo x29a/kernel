@@ -1,10 +1,16 @@
 #!/bin/bash
+# See more info at 
+# https://blog.chris007.de/compiling-a-kernel-module-on-and-for-the-raspberry-pi/
+
 # currently running kernel version
 KERNEL_VER=$(uname -r)
 # path to full rpi kernel git repo
 KERNEL_SRC=/root/kernel/master
 # branch of kernel
-KERNEL_BRANCH="rpi-4.1.y"
+KERNEL_BRANCH="rpi-4.4.y"
+
+# prerequisites
+# apt-get update && apt-get -y install git bc
 
 # if on unofficial kernel from rpi-update (you are on your own, things are more complicated):
 # rm /boot/.firmware_revision
@@ -54,12 +60,13 @@ zcat /proc/config.gz > ${KERNEL_SRC}/.config
 # link kernel source for compilation of modules
 echo ">>> linking kernel source for modules"
 read -n 1 -s
-ln -s ${KERNEL_SRC} /lib/modules/${KERNEL_VER}/build
+ln -s ${KERNEL_SRC}/build /lib/modules/${KERNEL_VER}/build
 
 # get symbol information from running kernel
+# if on arm v7, download Module7.symvers but rename it to Module.symvers anyway
 echo ">>> copy module symbol info"
 read -n 1 -s
-MODULE_URL="https://raw.githubusercontent.com/raspberrypi/firmware/${GIT_HASH}/extra/Module.symvers"
+MODULE_URL="https://raw.githubusercontent.com/raspberrypi/firmware/${COMMIT_HASH}/extra/Module.symvers"
 wget -q ${MODULE_URL} -O ${KERNEL_SRC}/Module.symvers
 # if on rpi-update kernel
 # cp /boot/Module.symvers ${KERNEL_SRC}/Module.symvers
@@ -82,4 +89,10 @@ make modules_prepare
 # make path/to/file.c
 # make M=path/to/module
 # see: http://askubuntu.com/a/171633/323901
+make M=drivers/w1/
 
+# checkout the results and load them
+modinfo drivers/w1/slaves/w1_therm.ko
+rmmod w1_therm
+insmod drivers/w1/slaves/w1_therm.ko
+lsmod
