@@ -8,9 +8,11 @@ KERNEL_VER=$(uname -r)
 KERNEL_SRC=/root/kernel/master
 # branch of kernel
 KERNEL_BRANCH="rpi-4.4.y"
+# Version of symbol info. For ARM v7 use Module7.symvers
+SYM_VERS="Module.symvers"
 
 # prerequisites
-# apt-get update && apt-get -y install git bc
+apt-get update && apt-get -y install git bc
 
 # if on unofficial kernel from rpi-update (you are on your own, things are more complicated):
 # rm /boot/.firmware_revision
@@ -64,10 +66,9 @@ read -n 1 -s
 ln -s ${KERNEL_SRC}/build /lib/modules/${KERNEL_VER}/build
 
 # get symbol information from running kernel
-# if on arm v7, download Module7.symvers but rename it to Module.symvers anyway
 echo ">>> copy module symbol info"
 read -n 1 -s
-MODULE_URL="https://raw.githubusercontent.com/raspberrypi/firmware/${COMMIT_HASH}/extra/Module.symvers"
+MODULE_URL="https://raw.githubusercontent.com/raspberrypi/firmware/${COMMIT_HASH}/extra/${SYM_VERS}"
 wget -q ${MODULE_URL} -O ${KERNEL_SRC}/Module.symvers
 # if on rpi-update kernel
 # cp /boot/Module.symvers ${KERNEL_SRC}/Module.symvers
